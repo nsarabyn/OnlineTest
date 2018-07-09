@@ -7,6 +7,7 @@ namespace OnlineTest
 {
 	public class Combat
 	{
+		public int CombatId { get; set; }
 		public int PlayerId { get; set; }
 		public int NPCId { get; set; }
 		public int PlayerHp { get; set; }

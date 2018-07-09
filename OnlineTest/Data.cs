@@ -29,7 +29,7 @@ namespace OnlineTest
 					Hp = 100,
 					Atk = 10,
 					Def = 10,
-					Spd = 10
+					Spd = 9
 				}
 			};
 		}
