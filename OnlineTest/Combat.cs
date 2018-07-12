@@ -13,5 +13,9 @@ namespace OnlineTest
 		public int PlayerHp { get; set; }
 		public int NPCHp { get; set; }
 		public int Round { get; set; }
+		public int Init { get; set; }
+		public int PlayerInit { get; set; }
+		public int NPCInit { get; set; }
+		public bool Complete { get; set; }
 	}
 }

@@ -13,7 +13,7 @@ namespace OnlineTest
 			{
 				new Player{
 					Id = 1,
-					Hp = 100,
+					Hp = 1000,
 					Atk = 10,
 					Def = 10,
 					Spd = 10
@@ -26,7 +26,7 @@ namespace OnlineTest
 			{
 				new NPC{
 					Id = 7,
-					Hp = 100,
+					Hp = 1000,
 					Atk = 10,
 					Def = 10,
 					Spd = 9

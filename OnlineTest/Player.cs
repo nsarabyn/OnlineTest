@@ -12,5 +12,7 @@ namespace OnlineTest
 		public int Atk { get; set; }
 		public int Def { get; set; }
 		public int Spd { get; set; }
+
+		public int Init { get; set; }
 	}
 }

@@ -10,7 +10,7 @@ namespace OnlineTest.ApiControllers
 {
     public class CombatController : ApiController
 	{
-		string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/OnlineTest";
+		string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\OnlineTest";
 		// GET: api/Combat
 		public IEnumerable<string> Get()
         {
@@ -29,7 +29,7 @@ namespace OnlineTest.ApiControllers
 		}
 		// POST: api/Combat
 		[Route("api/Combat/start")]
-		public void PostStart()
+		public Combat PostStart()
 		{
 			var player = Data.Players().Single(p=>p.Id == 1);
 			var enemy = Data.Enemies().Single(p => p.Id == 7);
@@ -41,19 +41,50 @@ namespace OnlineTest.ApiControllers
 				NPCId = enemy.Id,
 				PlayerHp = player.Hp,
 				NPCHp = enemy.Hp,
-				Round = 0
+				PlayerInit = Math.Max(player.Spd, enemy.Spd),
+				NPCInit = Math.Max(player.Spd, enemy.Spd),
+				Round = 0,
+				Init = Math.Max(player.Spd, enemy.Spd),
+				Complete = false
 			};
+
+
 			UpdateLog(combat);
+			return combat;
 		}
 
 	    [Route("api/Combat/attack")]
-	    public void PostAttack()
+	    public Combat PostAttack()
 	    {
 		    var combat = GetFromLog();
+			if (combat.Complete)
+			{
+				return combat;
+			}
+			combat.Round++;
 
 		    var player = Data.Players().Single(p => p.Id == combat.PlayerId);
 		    var enemy = Data.Enemies().Single(p => p.Id == combat.NPCId);
 
+			combat.PlayerInit = combat.PlayerInit - player.Spd;
+			combat.NPCInit = combat.NPCInit - enemy.Spd;
+
+			while (combat.PlayerInit <= 0)
+			{
+				combat.PlayerInit += combat.Init;
+				combat.NPCHp -= player.Atk;
+			}
+			while (combat.NPCInit <= 0)
+			{
+				combat.NPCInit += combat.Init;
+				combat.PlayerHp -= enemy.Atk;
+			}
+			if(combat.PlayerHp <=0 || combat.NPCHp<=0)
+			{
+				combat.Complete = true;
+			}
+			UpdateLog(combat);
+			return combat;
 
 		}
 
@@ -74,12 +105,12 @@ namespace OnlineTest.ApiControllers
 			{
 				Directory.CreateDirectory(path);
 			}
-			File.WriteAllText(path + "/CombatLog.txt", serialized);
+			File.WriteAllText(path + "\\CombatLog.txt", serialized);
 		}
 
 		private Combat GetFromLog()
 		{
-			return Newtonsoft.Json.JsonConvert.DeserializeObject<Combat>(File.ReadAllText(path));
+			return Newtonsoft.Json.JsonConvert.DeserializeObject<Combat>(File.ReadAllText(path + "\\CombatLog.txt"));
 		}
     }
 }
