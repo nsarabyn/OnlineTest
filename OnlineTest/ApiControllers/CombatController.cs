@@ -72,12 +72,12 @@ namespace OnlineTest.ApiControllers
 			while (combat.PlayerInit <= 0)
 			{
 				combat.PlayerInit += combat.Init;
-				combat.NPCHp -= player.Atk;
+				combat.NPCHp -= player.Atk - (int)Math.Ceiling(player.Atk*(enemy.Def/100d));
 			}
 			while (combat.NPCInit <= 0)
 			{
 				combat.NPCInit += combat.Init;
-				combat.PlayerHp -= enemy.Atk;
+				combat.PlayerHp -= enemy.Atk - (int)Math.Ceiling(enemy.Atk * (enemy.Def / 100d));
 			}
 			if(combat.PlayerHp <=0 || combat.NPCHp<=0)
 			{
