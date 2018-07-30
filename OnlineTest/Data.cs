@@ -26,7 +26,15 @@ namespace OnlineTest
 			{
 				new NPC{
 					Id = 7,
-					Hp = 100,
+					Hp = 25,
+					Atk = 10,
+					Def = 10,
+					Spd = 9
+				},
+
+				new NPC{
+					Id = 8,
+					Hp = 25,
 					Atk = 10,
 					Def = 10,
 					Spd = 9

@@ -17,9 +17,9 @@
 					}
 				});
 			}
-			function attack() {
+			function attack(npc) {
 				$.ajax({
-					url: 'api/combat/attack',
+					url: 'api/combat/attack/'+npc.Id,
 					type: 'POST',
 					contentType: "application/json;charset=utf-8",
 					success: function (data) {
@@ -35,10 +35,10 @@
 				start: start,
 				attack: attack
 			}
-			
+
 			ko.applyBindings(vm);
 		});
-</script>
+	</script>
 </asp:Content>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
@@ -46,10 +46,14 @@
 
 	<div class="row">
 		<button data-bind="click: start">Start</button>
-		<button data-bind="click: attack">Go</button>
 		<div data-bind="if: combat()">
-			<label data-bind="text: combat().PlayerHp"></label>
-			<label data-bind="text: combat().NPCHp"></label>
+			<label data-bind="text: combat().Player.Hp"></label>
+			<ul data-bind="foreach: combat().NPCs">
+				<li>
+					<label data-bind="text: Hp"></label>
+					<button data-bind="click: $root.attack">Go</button>
+				</li>
+			</ul>
 		</div>
 	</div>
 

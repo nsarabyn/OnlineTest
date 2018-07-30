@@ -38,13 +38,10 @@ namespace OnlineTest.ApiControllers
 			{
 				CombatId = 1,
 				PlayerId = player.Id,
-				NPCId = enemy.Id,
-				PlayerHp = player.Hp,
-				NPCHp = enemy.Hp,
-				PlayerInit = Math.Max(player.Spd, enemy.Spd),
-				NPCInit = Math.Max(player.Spd, enemy.Spd),
+				Player = player,
+				NPCs = Data.Enemies(),
 				Round = 0,
-				Init = Math.Max(player.Spd, enemy.Spd),
+				Init = Math.Max(player.Spd, Data.Enemies().Max(en => en.Spd)),
 				Complete = false
 			};
 
@@ -53,39 +50,44 @@ namespace OnlineTest.ApiControllers
 			return combat;
 		}
 
-	    [Route("api/Combat/attack")]
-	    public Combat PostAttack()
+	    [Route("api/Combat/attack/{id}")]
+	    public Combat PostAttack(int id)
 	    {
 		    var combat = GetFromLog();
-			if (combat.Complete)
+			var targEnemy = combat.NPCs.Single(npc => npc.Id == id);
+			if (combat.Complete || targEnemy.Hp <= 0)
 			{
 				return combat;
 			}
 			combat.Round++;
 
-		    var player = Data.Players().Single(p => p.Id == combat.PlayerId);
-		    var enemy = Data.Enemies().Single(p => p.Id == combat.NPCId);
+			DoAttack(combat.Player, targEnemy, combat.Init);
 
-			combat.PlayerInit = combat.PlayerInit - player.Spd;
-			combat.NPCInit = combat.NPCInit - enemy.Spd;
+			foreach (var npc in combat.NPCs)
+			{
+				if (npc.Hp > 0)
+				{
+					DoAttack(npc, combat.Player, combat.Init);
+				}
+			}
 
-			while (combat.PlayerInit <= 0)
-			{
-				combat.PlayerInit += combat.Init;
-				combat.NPCHp -= player.Atk - (int)Math.Ceiling(player.Atk*(enemy.Def/100d));
-			}
-			while (combat.NPCInit <= 0)
-			{
-				combat.NPCInit += combat.Init;
-				combat.PlayerHp -= enemy.Atk - (int)Math.Ceiling(enemy.Atk * (enemy.Def / 100d));
-			}
-			if(combat.PlayerHp <=0 || combat.NPCHp<=0)
+			if (combat.Player.Hp <= 0 || combat.NPCs.All(npc=> npc.Hp <= 0))
 			{
 				combat.Complete = true;
 			}
 			UpdateLog(combat);
 			return combat;
 
+		}
+
+		private void DoAttack(Char attacker, Char defender, int init)
+		{
+			attacker.Init = attacker.Init - attacker.Spd;
+			while (attacker.Init <= 0)
+			{
+				attacker.Init += init;
+				defender.Hp -= attacker.Atk - (int)Math.Ceiling(attacker.Atk * (defender.Def / 100d));
+			}
 		}
 
 	    // PUT: api/Combat/5
